@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Chatting</title>
+  <script src="/socket.io/socket.io.js"></script>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .chat-container {
+      width: 400px;
+      background-color: #ffffff;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    h1 {
+      text-align: center;
+      color: #333;
+      margin-bottom: 20px;
+    }
+
+    #message {
+      padding: 10px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+      margin-bottom: 10px;
+      outline: none;
+      width: calc(100% - 22px);
+    }
+
+    #sendBtn {
+      padding: 10px;
+      background-color: #007bff;
+      color: white;
+      font-size: 16px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    #sendBtn:hover {
+      background-color: #0056b3;
+    }
+
+    #messages {
+      list-style-type: none;
+      padding: 0;
+      margin-top: 20px;
+      max-height: 300px;
+      overflow-y: auto;
+      border-top: 1px solid #eee;
+    }
+
+    #messages p {
+      background-color: #f1f1f1;
+      margin: 8px 0;
+      padding: 10px;
+      border-radius: 5px;
+      color: #333;
+      word-wrap: break-word;
+    }
+
+    /* Scrollbar Styling */
+    #messages::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    #messages::-webkit-scrollbar-thumb {
+      background-color: #ccc;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+  <div class="chat-container">
+    <h1>Chatting</h1>
+    <input type="text" id="message" placeholder="Enter message"/>
+    <button id="sendBtn">Send</button>
+    <ul id="messages"></ul>
+  </div>
+
+  <script>
+    const socket = io();
+    const sendBtn = document.getElementById('sendBtn');
+    const messageInput = document.getElementById('message');
+    const allMessages = document.getElementById('messages');
+
+    socket.on("message", (message) => {
+      const p = document.createElement('p');
+      p.innerText = message;
+      allMessages.appendChild(p);
+    });
+
+    sendBtn.addEventListener("click", () => {
+      const message = messageInput.value;
+      if (message.trim() !== "") {
+        socket.emit('user-message', message);
+        messageInput.value = "";
+      }
+    });
+
+    messageInput.addEventListener("keypress", function (e) {
+      if (e.key === "Enter") {
+        sendBtn.click();
+      }
+    });
+  </script>
+</body>
+</html>
